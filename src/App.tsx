@@ -60,17 +60,12 @@ function useAttendants() {
         const res = await fetch('/api/availability', { cache: 'no-store' });
         if (res.ok) {
           const data = await res.json();
-          if (isMounted && data.phone) {
-            setPhone(data.phone);
-            return;
-          }
+          if (isMounted) setPhone(data.phone || '');
+        } else if (res.status === 503 && isMounted) {
+          setPhone('');
         }
       } catch {
-        // Fallback to local storage
-      }
-      const localPhone = getNextActivePhone();
-      if (isMounted && localPhone) {
-        setPhone(localPhone);
+        // Keep the last known phone while offline.
       }
     };
 
@@ -123,27 +118,17 @@ function useAttendants() {
 
       setRoutingNotice('Conectando com um atendente…');
 
-      let targetPhone = phone;
-      try {
-        const res = await fetch('/api/route', {
-          method: 'POST',
-          cache: 'no-store',
-          headers: { 'Content-Type': 'application/json' },
-          body: '{}',
-        });
-        if (res.ok) {
-          const data = await res.json();
-          if (data.phone && /^55[1-9]{2}9\d{8}$/.test(data.phone)) {
-            targetPhone = data.phone;
-          }
-        } else {
-          const fallbackPhone = getNextActivePhone();
-          if (fallbackPhone) targetPhone = fallbackPhone;
-        }
-      } catch {
-        const fallbackPhone = getNextActivePhone();
-        if (fallbackPhone) targetPhone = fallbackPhone;
+      let targetPhone = '';
+      const res = await fetch('/api/route', {
+        method: 'POST', cache: 'no-store',
+        headers: { 'Content-Type': 'application/json' }, body: '{}',
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        if (newWin) newWin.close();
+        throw new Error(data.error || 'Atendimento temporariamente indisponível.');
       }
+      if (data.phone && /^55[1-9]{2}9\d{8}$/.test(data.phone)) targetPhone = data.phone;
 
       if (!targetPhone) {
         throw new Error('Nenhum atendente disponível no momento. Tente novamente mais tarde.');
@@ -600,43 +585,6 @@ function AdminPanelView({ navigate }: { navigate: (path: string) => void }) {
       }
       return data;
     } catch (err: any) {
-      // Local fallback handler if server is unavailable or offline
-      if (endpoint === 'session') {
-        if (options.method === 'POST') {
-          const body = JSON.parse(options.body as string);
-          if (
-            body.password === 'admin' ||
-            body.password === 'admin123' ||
-            body.password === 'prevent' ||
-            body.password === 'prevent2026'
-          ) {
-            setAuthenticated(true);
-            return { authenticated: true };
-          }
-          throw new Error('Senha incorreta. Tente "admin" ou "admin123".');
-        }
-        if (options.method === 'DELETE') {
-          setAuthenticated(false);
-          return { authenticated: false };
-        }
-        return { authenticated: checkIsAuthenticated() };
-      }
-
-      if (endpoint === 'admin') {
-        if (options.method === 'PUT') {
-          const body = JSON.parse(options.body as string);
-          const current = getStoredData();
-          const updated: PanelData = {
-            attendants: body.attendants,
-            version: current.version + 1,
-            updatedAt: new Date().toISOString(),
-          };
-          saveStoredData(updated);
-          return updated;
-        }
-        return getStoredData();
-      }
-
       throw err;
     }
   }
@@ -996,7 +944,7 @@ function AdminPanelView({ navigate }: { navigate: (path: string) => void }) {
           <p>Entre para gerenciar os números de WhatsApp do site.</p>
           <form onSubmit={handleLogin}>
             <label htmlFor="panel-password">
-              Senha de acesso (padrão: <code>admin</code> ou <code>admin123</code>)
+              Senha de acesso
             </label>
             <input
               id="panel-password"
@@ -1064,45 +1012,6 @@ export default function App() {
 
   return (
     <>
-      {/* Floating navigation bar enabling quick switching between Prevent Medi views */}
-      <div className="nav-switcher-bar">
-        {showSwitcher ? (
-          <>
-            <button
-              type="button"
-              className={`nav-switcher-btn ${currentPath === '/' || currentPath === '/contato' ? 'active' : ''}`}
-              onClick={() => navigate('/')}
-            >
-              <MessageCircle size={14} /> Atendente Virtual & Opções (Unificado)
-            </button>
-            <button
-              type="button"
-              className={`nav-switcher-btn ${currentPath === '/painel' ? 'active' : ''}`}
-              onClick={() => navigate('/painel')}
-            >
-              <LockKeyhole size={14} /> Painel de Atendentes (/painel)
-            </button>
-            <button
-              type="button"
-              className="nav-switcher-btn opacity-60 hover:opacity-100"
-              title="Ocultar barra de testes"
-              onClick={() => setShowSwitcher(false)}
-            >
-              <EyeOff size={14} />
-            </button>
-          </>
-        ) : (
-          <button
-            type="button"
-            className="nav-switcher-btn opacity-60 hover:opacity-100"
-            title="Mostrar alternador de páginas"
-            onClick={() => setShowSwitcher(true)}
-          >
-            <Eye size={14} /> Rotas
-          </button>
-        )}
-      </div>
-
       {isPainel ? (
         <AdminPanelView navigate={navigate} />
       ) : (

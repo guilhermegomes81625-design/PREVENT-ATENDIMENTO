@@ -11,18 +11,7 @@ const DEFAULT_ATTENDANTS: Attendant[] = [
     phone: '5511966604328',
     active: true,
   },
-  {
-    id: 'att-2',
-    name: 'Central de Agendamento',
-    phone: '5511977771234',
-    active: true,
-  },
-  {
-    id: 'att-3',
-    name: 'Suporte & Dúvidas',
-    phone: '5511988885678',
-    active: true,
-  },
+
 ];
 
 export function getStoredData(): PanelData {
