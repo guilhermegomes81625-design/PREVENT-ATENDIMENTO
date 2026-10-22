@@ -181,9 +181,8 @@ function ClientView({
 
   const isContato = currentPath === '/contato';
 
-  // Step-by-step simulated chat animation for /contato
+  // Step-by-step simulated chat animation
   useEffect(() => {
-    if (!isContato) return;
     setChatStep(0);
     const t1 = setTimeout(() => setChatStep(1), 700);
     const t2 = setTimeout(() => setChatStep(2), 1700);
@@ -194,7 +193,7 @@ function ClientView({
       clearTimeout(t2);
       clearTimeout(t3);
     };
-  }, [isContato]);
+  }, []);
 
   const openPrivacyModal = () => {
     privacyDialogRef.current?.showModal();
@@ -254,14 +253,11 @@ function ClientView({
     },
   ];
 
-  // In original prevent-medi.com, question 3 ("Posso acessar pelo computador?") is shown on /contato
-  const visibleFaqs = faqItems.filter((_, idx) => isContato || idx !== 2);
-
   return (
     <div
       onClick={routeWhatsApp}
       onAuxClick={routeWhatsApp}
-      className={`bio-page-wrapper ${isContato ? 'theme-medi-page' : 'theme-prevent-page central-home'}`}
+      className="bio-page-wrapper theme-unified-page"
     >
       {routingNotice && (
         <div className="routing-notice" role="status">
@@ -278,148 +274,143 @@ function ClientView({
       <div className="bio-glow-2" aria-hidden="true" />
 
       <div className="bio-container">
-        {/* VIEW 1: Central de Atendimento (Home /) */}
-        {!isContato && (
-          <>
-            <header className="central-intro">
-              <h1>
-                <ShieldCheck size={15} aria-hidden="true" /> Atendimento ao Cliente
-              </h1>
-              <p>
-                Central de atendimento direto pelo WhatsApp. Escolha uma das opções abaixo para iniciar sua conversa:
-              </p>
-            </header>
+        {/* PARTE 1: Card da Atendente Virtual com Status Online */}
+        <header className="bio-attendant-card">
+          <div className="bio-attendant-avatar-col">
+            <div className="bio-attendant-avatar-ring">
+              <img
+                src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80"
+                alt="Atendente Virtual"
+                className="bio-attendant-img"
+                width={70}
+                height={70}
+              />
+              <span className="bio-attendant-pulse-ring" />
+              <span className="bio-attendant-online-dot" />
+            </div>
+          </div>
+          <div className="bio-attendant-info-col">
+            <div className="bio-attendant-name-row">
+              <h2>Atendente Virtual</h2>
+              <span className="bio-attendant-badge">
+                <CircleCheck className="w-3 h-3 text-[#25d366]" />
+                Online
+              </span>
+            </div>
+            <p className="bio-attendant-role">Central de Atendimento ao Cliente</p>
+            <div className="bio-attendant-status-live">
+              <span className="bio-live-dot" />
+              <span>Pronta para responder via WhatsApp</span>
+            </div>
+          </div>
+        </header>
 
-            <nav className="central-options" aria-label="Opções de atendimento">
-              {mainOptions.map(({ title, description, badge, Icon, message }, idx) => (
-                <a
-                  key={title}
-                  className={`central-option ${idx === 0 ? 'central-option-primary' : ''}`}
-                  href={buildWhatsAppUrl(message)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <span className="central-option-icon">
-                    <Icon size={23} aria-hidden="true" />
-                  </span>
-                  <span className="central-option-content">
-                    <span className="central-option-title">
-                      {title}
-                      {badge && <small>{badge}</small>}
-                    </span>
-                    <span className="central-option-description">{description}</span>
-                  </span>
-                  <ChevronRight size={20} className="central-option-arrow" aria-hidden="true" />
-                </a>
-              ))}
-            </nav>
-          </>
-        )}
-
-        {/* VIEW 2: Atendente Virtual (/contato) */}
-        {isContato && (
-          <>
-            <header className="bio-attendant-card">
-              <div className="bio-attendant-avatar-col">
-                <div className="bio-attendant-avatar-ring">
-                  <img
-                    src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80"
-                    alt="Atendente Virtual"
-                    className="bio-attendant-img"
-                    width={70}
-                    height={70}
-                  />
-                  <span className="bio-attendant-pulse-ring" />
-                  <span className="bio-attendant-online-dot" />
+        {/* PARTE 2: Conversa Interativa Simulada & Botão Principal */}
+        <section className="bio-chat-section" aria-label="Conversa com a Atendente Virtual">
+          {chatStep >= 1 ? (
+            <div className="bio-bubble-wrapper fade-in-up">
+              <div className="bio-bubble">
+                <p className="bio-bubble-greeting">Olá! Seja bem-vindo(a) ao canal de atendimento. 👋</p>
+                <p className="bio-bubble-question">Precisa de ajuda ou deseja tratar de algum assunto?</p>
+                <div className="bio-bubble-meta">
+                  <span className="bio-bubble-time">Agora</span>
+                  <CheckCheck className="w-3.5 h-3.5 bio-check-icon" />
                 </div>
               </div>
-              <div className="bio-attendant-info-col">
-                <div className="bio-attendant-name-row">
-                  <h2>Atendente Virtual</h2>
-                  <span className="bio-attendant-badge">
-                    <CircleCheck className="w-3 h-3 text-[#25d366]" />
-                    Online
-                  </span>
-                </div>
-                <p className="bio-attendant-role">Central de Atendimento ao Cliente</p>
-                <div className="bio-attendant-status-live">
-                  <span className="bio-live-dot" />
-                  <span>Pronta para responder via WhatsApp</span>
+            </div>
+          ) : (
+            <div className="bio-typing-indicator">
+              <span className="bio-dot" />
+              <span className="bio-dot" />
+              <span className="bio-dot" />
+              <span className="bio-typing-text">Atendente digitando...</span>
+            </div>
+          )}
+
+          {chatStep === 2 && (
+            <div className="bio-typing-indicator fade-in">
+              <span className="bio-dot" />
+              <span className="bio-dot" />
+              <span className="bio-dot" />
+              <span className="bio-typing-text">Atendente digitando...</span>
+            </div>
+          )}
+
+          {chatStep >= 3 && (
+            <div className="bio-bubble-wrapper fade-in-up">
+              <div className="bio-bubble">
+                <p className="bio-bubble-text">
+                  Clique no botão abaixo para falar com um de nossos atendentes. Nossa equipe irá entender sua
+                  solicitação e direcionar você para o atendimento adequado.
+                </p>
+                <div className="bio-bubble-meta">
+                  <span className="bio-bubble-time">Agora</span>
+                  <CheckCheck className="w-3.5 h-3.5 bio-check-icon" />
                 </div>
               </div>
-            </header>
+            </div>
+          )}
 
-            <section className="bio-chat-section" aria-label="Conversa com a Atendente Virtual">
-              {chatStep >= 1 ? (
-                <div className="bio-bubble-wrapper fade-in-up">
-                  <div className="bio-bubble">
-                    <p className="bio-bubble-greeting">Olá! Seja bem-vindo(a) ao canal de atendimento. 👋</p>
-                    <p className="bio-bubble-question">Precisa de ajuda ou deseja tratar de algum assunto?</p>
-                    <div className="bio-bubble-meta">
-                      <span className="bio-bubble-time">Agora</span>
-                      <CheckCheck className="w-3.5 h-3.5 bio-check-icon" />
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="bio-typing-indicator">
-                  <span className="bio-dot" />
-                  <span className="bio-dot" />
-                  <span className="bio-dot" />
-                  <span className="bio-typing-text">Atendente digitando...</span>
-                </div>
-              )}
+          {chatStep >= 3 && (
+            <div className="bio-cta-container fade-in-up">
+              <a
+                href={buildWhatsAppUrl('Olá! Gostaria de falar com um atendente.')}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bio-chat-action-btn"
+              >
+                <WhatsAppIcon className="w-5 h-5 bio-btn-icon" />
+                <span>Falar com um atendente</span>
+              </a>
+              <span className="bio-chat-action-caption">Canal direto de atendimento via WhatsApp</span>
+            </div>
+          )}
+        </section>
 
-              {chatStep === 2 && (
-                <div className="bio-typing-indicator fade-in">
-                  <span className="bio-dot" />
-                  <span className="bio-dot" />
-                  <span className="bio-dot" />
-                  <span className="bio-typing-text">Atendente digitando...</span>
-                </div>
-              )}
+        {/* PARTE 3: Opções Diretas de Atendimento */}
+        <section className="w-full flex flex-col gap-3">
+          <header className="central-intro pt-2">
+            <h1>
+              <ShieldCheck size={15} aria-hidden="true" /> Central de Opções
+            </h1>
+            <p>
+              Ou se preferir, escolha um canal específico abaixo para iniciar sua conversa diretamente:
+            </p>
+          </header>
 
-              {chatStep >= 3 && (
-                <div className="bio-bubble-wrapper fade-in-up">
-                  <div className="bio-bubble">
-                    <p className="bio-bubble-text">
-                      Clique no botão abaixo para falar com um de nossos atendentes. Nossa equipe irá entender sua
-                      solicitação e direcionar você para o atendimento adequado.
-                    </p>
-                    <div className="bio-bubble-meta">
-                      <span className="bio-bubble-time">Agora</span>
-                      <CheckCheck className="w-3.5 h-3.5 bio-check-icon" />
-                    </div>
-                  </div>
-                </div>
-              )}
+          <nav className="central-options" aria-label="Opções de atendimento">
+            {mainOptions.map(({ title, description, badge, Icon, message }, idx) => (
+              <a
+                key={title}
+                className={`central-option ${idx === 0 ? 'central-option-primary' : ''}`}
+                href={buildWhatsAppUrl(message)}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span className="central-option-icon">
+                  <Icon size={23} aria-hidden="true" />
+                </span>
+                <span className="central-option-content">
+                  <span className="central-option-title">
+                    {title}
+                    {badge && <small>{badge}</small>}
+                  </span>
+                  <span className="central-option-description">{description}</span>
+                </span>
+                <ChevronRight size={20} className="central-option-arrow" aria-hidden="true" />
+              </a>
+            ))}
+          </nav>
+        </section>
 
-              {chatStep >= 3 && (
-                <div className="bio-cta-container fade-in-up">
-                  <a
-                    href={buildWhatsAppUrl('Olá! Gostaria de falar com um atendente.')}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="bio-chat-action-btn"
-                  >
-                    <WhatsAppIcon className="w-5 h-5 bio-btn-icon" />
-                    <span>Falar com um atendente</span>
-                  </a>
-                  <span className="bio-chat-action-caption">Canal direto de atendimento via WhatsApp</span>
-                </div>
-              )}
-            </section>
-          </>
-        )}
-
-        {/* FAQ Section */}
+        {/* PARTE 4: Dúvidas Frequentes (FAQ) */}
         <section className="bio-faq-card">
           <h2 className="bio-faq-title">
             <CircleHelp className="w-4 h-4 bio-faq-icon" />
             Dúvidas frequentes
           </h2>
           <div className="bio-faq-list">
-            {visibleFaqs.map((item, idx) => {
+            {faqItems.map((item, idx) => {
               const isOpen = openFaq === idx;
               return (
                 <div key={idx} className={`bio-faq-item ${isOpen ? 'open' : ''}`}>
@@ -443,20 +434,18 @@ function ClientView({
           </div>
         </section>
 
-        {/* Bottom CTA on Home */}
-        {!isContato && (
-          <a
-            className="central-bottom-cta"
-            href={buildWhatsAppUrl('Olá! Gostaria de ser atendido pela central de atendimento.')}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <WhatsAppIcon className="central-whatsapp-icon" />
-            Abrir atendimento no WhatsApp
-          </a>
-        )}
+        {/* PARTE 5: Botão inferior de contato */}
+        <a
+          className="central-bottom-cta"
+          href={buildWhatsAppUrl('Olá! Gostaria de ser atendido pela central de atendimento.')}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <WhatsAppIcon className="central-whatsapp-icon" />
+          Abrir atendimento no WhatsApp
+        </a>
 
-        {/* Footer */}
+        {/* PARTE 6: Rodapé Institucional */}
         <footer className="bio-footer">
           <div className="bio-company-box">
             <div className="bio-company-header">
@@ -1081,24 +1070,17 @@ export default function App() {
           <>
             <button
               type="button"
-              className={`nav-switcher-btn ${currentPath === '/' ? 'active' : ''}`}
+              className={`nav-switcher-btn ${currentPath === '/' || currentPath === '/contato' ? 'active' : ''}`}
               onClick={() => navigate('/')}
             >
-              <ShieldCheck size={14} /> Início (Opções)
-            </button>
-            <button
-              type="button"
-              className={`nav-switcher-btn ${currentPath === '/contato' ? 'active' : ''}`}
-              onClick={() => navigate('/contato')}
-            >
-              <MessageCircle size={14} /> Atendente Virtual
+              <MessageCircle size={14} /> Atendente Virtual & Opções (Unificado)
             </button>
             <button
               type="button"
               className={`nav-switcher-btn ${currentPath === '/painel' ? 'active' : ''}`}
               onClick={() => navigate('/painel')}
             >
-              <LockKeyhole size={14} /> Painel (/painel)
+              <LockKeyhole size={14} /> Painel de Atendentes (/painel)
             </button>
             <button
               type="button"

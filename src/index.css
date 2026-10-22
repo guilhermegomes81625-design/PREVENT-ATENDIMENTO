@@ -62,6 +62,24 @@
   --bubble-border: rgba(0, 132, 68, 0.12);
 }
 
+.theme-unified-page {
+  --bg-start: #f2f7fc;
+  --bg-end: #e5f0f9;
+  --primary: #0085bc;
+  --accent-blue: #0085bc;
+  --accent-gold: #c69214;
+  --text-main: #0a1f38;
+  --text-muted: #536b88;
+  --border-color: rgba(0, 45, 98, 0.08);
+  --card-bg: #ffffff;
+  --attendant-ring: linear-gradient(135deg, #0085bc 0%, #25d366 50%, #128c52 100%);
+  --glow-1-color: rgba(0, 133, 188, 0.14);
+  --glow-2-color: rgba(37, 211, 102, 0.10);
+  --chat-bg: #ffffff;
+  --bubble-bg: #f4f8fc;
+  --bubble-border: rgba(0, 133, 188, 0.12);
+}
+
 /* Page wrapper */
 .bio-page-wrapper {
   background: radial-gradient(at 0% 0%, var(--glow-1-color) 0px, transparent 50%),
