@@ -2,5 +2,7 @@
   "name": "Central de Atendimento ao Cliente | PREVENT-MEDI",
   "description": "Central de Atendimento ao Cliente e agendamento direto pelo WhatsApp PREVENT-MEDI com distribuição de atendentes.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }

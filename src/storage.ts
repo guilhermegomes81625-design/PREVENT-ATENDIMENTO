@@ -1,8 +1,8 @@
 import { Attendant, PanelData } from './types.ts';
 
-const STORAGE_KEY = 'prevent_medi_attendants_v1';
-const ROTATION_KEY = 'prevent_medi_rotation_idx';
-const SESSION_KEY = 'prevent_medi_auth_session';
+const STORAGE_KEY = 'central_atendimento_data_v2';
+const ROTATION_KEY = 'central_atendimento_rotation_idx';
+const SESSION_KEY = 'central_atendimento_auth_session';
 
 const DEFAULT_ATTENDANTS: Attendant[] = [
   {
@@ -11,7 +11,6 @@ const DEFAULT_ATTENDANTS: Attendant[] = [
     phone: '5511966604328',
     active: true,
   },
-
 ];
 
 export function getStoredData(): PanelData {
